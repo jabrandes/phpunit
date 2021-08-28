@@ -313,4 +313,26 @@ final class GeneratorTest extends TestCase
 
         $mock = $this->createMock(FinalClass::class);
     }
+
+    public function testGetMockSupportsNamespacedMockClassname(): void
+    {
+        $namespacedClassname = 'Some\\Test\\Class_' . random_int(10000, 100000);
+
+        $mock = $this->generator->getMock(ArrayObject::class, [], [], $namespacedClassname);
+
+        $this->assertTrue(class_exists($namespacedClassname));
+        $this->assertEquals($namespacedClassname, get_class($mock));
+    }
+
+    public function testGetMockSupportsNamespacedMockClassnameWhenMockedTypeDoesNotExist(): void
+    {
+        $namespacedClassname = 'Some\\Test\\Class_' . random_int(10000, 100000);
+        $type                = 'Some\\Test\\OtherClass_' . random_int(10000, 100000);
+
+        $mock = $this->generator->getMock($type, [], [], $namespacedClassname);
+
+        $this->assertTrue(class_exists($namespacedClassname));
+        $this->assertTrue(class_exists($type));
+        $this->assertEquals($namespacedClassname, get_class($mock));
+    }
 }
